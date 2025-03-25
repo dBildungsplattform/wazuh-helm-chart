@@ -39,8 +39,10 @@ spec:
       to:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: kube-system
+              kubernetes.io/metadata.name: {{ .Values.dashboard.networkPolicy.dnsNamespace }}
           podSelector:
             matchLabels:
-              k8s-app: kube-dns
+              {{- with .Values.dashboard.networkPolicy.dnsLabels }}
+              {{ toYaml . }}
+              {{- end }}
 {{- end -}}

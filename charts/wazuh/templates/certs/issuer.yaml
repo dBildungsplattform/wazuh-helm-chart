@@ -18,9 +18,9 @@ spec:
     organizations:
       - Company
     countries:
-      - US
+      - DE
     localities:
-      - California
+      - Berlin
   privateKey:
     algorithm: RSA
     size: 2048

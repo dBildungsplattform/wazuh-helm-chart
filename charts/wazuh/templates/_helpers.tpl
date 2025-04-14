@@ -333,7 +333,7 @@ uiSettings.overrides.defaultRoute: /app/wz-home
   -->
   <auth>
     <disabled>no</disabled>
-    <port>{{ .Values.wazuh.master.service.ports.registration }}</port>
+    <port>{{ .Values.wazuh.master.registrationService.port }}</port>
     <use_source_ip>no</use_source_ip>
     <force>
       <enabled>yes</enabled>
@@ -692,7 +692,7 @@ vulnerability-detection.disable_scan_manager=0
   -->
   <auth>
     <disabled>no</disabled>
-    <port>{{ .Values.wazuh.master.service.ports.registration }}</port>
+    <port>{{ .Values.wazuh.master.registrationService.port }}</port>
     <use_source_ip>no</use_source_ip>
     <force>
       <enabled>yes</enabled>
@@ -780,11 +780,11 @@ plugins.security.ssl.http.enabled: true
 plugins.security.ssl.transport.enforce_hostname_verification: false
 plugins.security.ssl.transport.resolve_hostname: false
 plugins.security.authcz.admin_dn:
-  - CN=admin,O=Company,L=California,C=US
+  - CN=admin,O=Company,L=Berlin,C=DE
 plugins.security.check_snapshot_restore_write_privileges: true
 plugins.security.enable_snapshot_restore_privilege: true
 plugins.security.nodes_dn:
-  - CN=indexer,O=Company,L=California,C=US
+  - CN=indexer,O=Company,L=Berlin,C=DE
 plugins.security.restapi.roles_enabled:
 - "all_access"
 - "security_rest_api_access"

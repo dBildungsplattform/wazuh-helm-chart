@@ -26,7 +26,7 @@ spec:
     # Wazuh Manager
     - ports:
       - protocol: TCP
-        port: {{ .Values.wazuh.master.service.ports.api }}
+        port: {{ .Values.wazuh.master.apiService.port }}
       to:
         - podSelector:
             matchLabels:
@@ -39,8 +39,10 @@ spec:
       to:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: kube-system
+              kubernetes.io/metadata.name: {{ .Values.dashboard.networkPolicy.dnsNamespace }}
           podSelector:
             matchLabels:
-              k8s-app: kube-dns
+              {{- with .Values.dashboard.networkPolicy.dnsLabels }}
+              {{ toYaml . }}
+              {{- end }}
 {{- end -}}

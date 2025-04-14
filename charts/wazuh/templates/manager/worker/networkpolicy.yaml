@@ -48,8 +48,10 @@ spec:
       to:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: kube-system
+              kubernetes.io/metadata.name: {{ .Values.wazuh.worker.networkPolicy.dnsNamespace }}
           podSelector:
             matchLabels:
-              k8s-app: kube-dns
+              {{- with .Values.wazuh.worker.networkPolicy.dnsLabels }}
+              {{ toYaml . }}
+              {{- end }}
 {{- end -}}

@@ -26,24 +26,27 @@ spec:
         node-type: master
       name: wazuh-manager-master
       annotations:
-        checksum/config: {{ (include (print .Template.BasePath "/manager/configmap.yaml") . | cat (include (print .Template.BasePath "/manager/secret-api-cred.yaml") . ) | cat (include (print .Template.BasePath "/manager/secret-authd-pass.yaml") . ) | cat (include (print .Template.BasePath "/manager/secret-cluster-key.yaml") . ) | sha256sum) }}
+        checksum/config: {{ (include (print .Template.BasePath "/manager/secret-config.yaml") . | cat (include (print .Template.BasePath "/manager/secret-api-cred.yaml") . ) | cat (include (print .Template.BasePath "/manager/secret-authd-pass.yaml") . ) | cat (include (print .Template.BasePath "/manager/secret-cluster-key.yaml") . ) | sha256sum) }}
         {{- with .Values.wazuh.master.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
       volumes:
         - name: config
-          configMap:
-            name: {{ template "wazuh.fullname" . }}-manager-config
+          secret:
+            secretName: {{ template "wazuh.fullname" . }}-manager-config
             defaultMode: 0777
         - name: filebeat-certs
           secret:
             secretName: filebeat-tls
         - name: wazuh-authd-pass
           secret:
-            secretName: wazuh-authd-pass
+            secretName: {{ .Values.wazuh.authd.existingSecret | default "wazuh-authd-pass" }}
         - name: result-config
           emptyDir: {}
+        {{- if .Values.wazuh.master.extraVolumes }}
+        {{ toYaml .Values.wazuh.master.extraVolumes | nindent 8 }}
+        {{- end }}
       {{ with .Values.imagePullSecrets -}}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -80,7 +83,7 @@ spec:
             # Wazuh Config
             - mountPath: /wazuh-config-mount/etc/
               name: result-config
-            - mountPath: /var/ossec/etc/local_internal_options.conf
+            - mountPath: /wazuh-config-mount/etc/local_internal_options.conf
               name: config
               readOnly: true
               subPath: master_local_internal_options.conf
@@ -100,7 +103,7 @@ spec:
             # Authd pass
             - name: wazuh-authd-pass
               mountPath: /wazuh-config-mount/etc/authd.pass
-              subPath: authd.pass
+              subPath: {{ .Values.wazuh.authd.existingSecretKey | default "authd.pass" }}
               readOnly: true
             # PVC
             - name: {{ include "wazuh.fullname" . }}-manager-master
@@ -136,12 +139,15 @@ spec:
             - name: {{ include "wazuh.fullname" . }}-manager-master
               mountPath: /var/lib/filebeat
               subPath: filebeat/var/lib/filebeat
+            {{- if .Values.wazuh.master.extraVolumeMounts }}
+            {{ toYaml .Values.wazuh.master.extraVolumeMounts | nindent 12 }}
+            {{- end }}
           ports:
-            - containerPort: {{ .Values.wazuh.master.service.ports.registration }}
+            - containerPort: {{ .Values.wazuh.master.registrationService.port }}
               name: registration
             - containerPort: {{ .Values.wazuh.service.port }}
               name: cluster
-            - containerPort: {{ .Values.wazuh.master.service.ports.api }}
+            - containerPort: {{ .Values.wazuh.master.apiService.port }}
               name: api
           {{- /*
           # Will be implemented on Wazuh v5.0.0

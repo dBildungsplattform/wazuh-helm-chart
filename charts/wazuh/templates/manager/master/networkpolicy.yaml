@@ -14,10 +14,10 @@ spec:
   ingress:
     - ports:
         - protocol: TCP
-          port: {{ .Values.wazuh.master.service.ports.registration }}
+          port: {{ .Values.wazuh.master.registrationService.port }}
     - ports:
         - protocol: TCP
-          port: {{ .Values.wazuh.master.service.ports.api }}
+          port: {{ .Values.wazuh.master.apiService.port }}
       from:
         - podSelector:
             matchLabels:
@@ -48,8 +48,10 @@ spec:
       to:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: kube-system
+              kubernetes.io/metadata.name: {{ .Values.wazuh.master.networkPolicy.dnsNamespace }}
           podSelector:
             matchLabels:
-              k8s-app: kube-dns
+              {{- with .Values.wazuh.master.networkPolicy.dnsLabels }}
+              {{ toYaml . }}
+              {{- end }}
 {{- end -}}

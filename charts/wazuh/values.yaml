@@ -36,12 +36,17 @@ dashboard:
 
   networkPolicy:
     enabled: true
+    dnsNamespace: kube-system
+    dnsLabels:
+      k8s-app: coredns
 
   # with this you will be able to access kibana on http port instead of https
   # if you use Ambassador edgestack this is necessary becasue
   # with `true` route will close unexpectedly
   # when accessing via ambassador external url
   enable_ssl: false
+
+  apiURL: https://wazuh-api
 
   service:
     annotations: {}
@@ -50,8 +55,8 @@ dashboard:
   
   cred:
     existingSecret: ""
-    username: "kibanaserver"
-    password: "kibanaserver"
+    username: ""
+    password: ""
   
   config: |
     {{- include "wazuh.dashboard.config" . | indent 2 -}}
@@ -109,6 +114,9 @@ indexer:
 
   networkPolicy:
     enabled: true
+    dnsNamespace: kube-system
+    dnsLabels:
+      k8s-app: coredns
 
   initContainers:
     volumeMountHack:
@@ -150,12 +158,12 @@ indexer:
 
   cred:
     existingSecret: ""
-    username: "admin"
-    password: "SecretPassword"    
+    username: ""
+    password: ""
 
 
 wazuh:
-  key: "c98b62a9b6169ac5f67dae55ae4a9088"
+  key: ""
   images:
     repository: wazuh/wazuh-manager
     tag: "4.11.1"
@@ -179,10 +187,12 @@ wazuh:
     existingSecret: ""
     username: "wazuh-wui"
     # The password must have a length between 8 and 64 characters and contain at least one upper and lower case letter, a number, and a symbol(.*+?-).
-    password: "MyS3cr37P450r.*-"
+    password: ""
   authd:
     existingSecret: ""
-    pass: "password"
+    # Key in Kubernetes-Secret
+    existingSecretKey: ""
+    pass: ""
   
   initContainer:
     resources: 
@@ -196,12 +206,17 @@ wazuh:
     annotations: {}
     podAnnotations: {}
 
-    service:
+    apiService:
       type: ClusterIP
       annotations: {}
-      ports:
-        registration: 1515
-        api: 55000
+      port: 55000
+      targetPort: 55000
+
+    registrationService:
+      type: ClusterIP
+      annotations: {}
+      port: 1515
+      targetPort: 1515
 
     resources:
       limits:
@@ -212,7 +227,10 @@ wazuh:
     
     networkPolicy:
       enabled: true
-    
+      dnsNamespace: kube-system
+      dnsLabels:
+        k8s-app: coredns
+
     storageClass: null
     storageSize: 50Gi
 
@@ -239,6 +257,11 @@ wazuh:
     localInternalOptions: |
       {{- include "wazuh.master.local_internal_options" . | indent 2 -}}
 
+    # Additional volumes for Pods
+    extraVolumes: []
+    # Additional volume mounts for Pods
+    extraVolumeMounts: []
+
   worker:
     replicas: 2
 
@@ -264,6 +287,9 @@ wazuh:
     
     networkPolicy:
       enabled: true
+      dnsNamespace: kube-system
+      dnsLabels:
+        k8s-app: coredns
 
     storageClass: null
     storageSize: 50Gi

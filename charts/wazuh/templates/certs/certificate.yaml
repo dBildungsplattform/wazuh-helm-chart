@@ -20,9 +20,9 @@ spec:
     organizations:
       - Company
     countries:
-      - US
+      - DE
     localities:
-      - California
+      - Berlin
 
   issuerRef:
     name: {{ include "wazuh.fullname" . }}-ca-issuer
@@ -49,9 +49,9 @@ spec:
     organizations:
       - Company
     countries:
-      - US
+      - DE
     localities:
-      - California
+      - Berlin
 
   issuerRef:
     name: {{ include "wazuh.fullname" . }}-ca-issuer
@@ -78,9 +78,9 @@ spec:
     organizations:
       - Company
     countries:
-      - US
+      - DE
     localities:
-      - California
+      - Berlin
 
   issuerRef:
     name: {{ include "wazuh.fullname" . }}-ca-issuer
@@ -107,9 +107,9 @@ spec:
     organizations:
       - Company
     countries:
-      - US
+      - DE
     localities:
-      - California
+      - Berlin
 
   issuerRef:
     name: {{ include "wazuh.fullname" . }}-ca-issuer

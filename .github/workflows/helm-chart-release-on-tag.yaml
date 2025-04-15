@@ -22,3 +22,4 @@ jobs:
       helm_chart_version_generation: specified
       helm_chart_version: "${{ github.ref_name }}"
       helm_repo_list: cert-manager,https://charts.jetstack.io
+      image_tag_generation: chart_yaml
